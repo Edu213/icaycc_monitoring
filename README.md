@@ -1,6 +1,6 @@
-# Título del Proyecto
+# Monitorio del estado de un servidor.
 
-Monitorio del estado de un servidor.
+Por el momento el repositorio esta dedicado a pruebas de tecnologias como glances, Apptainer, Netdata, Bashtop.
 
 ## Autores ✒️
 
