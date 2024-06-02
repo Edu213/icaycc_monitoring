@@ -1,0 +1,16 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%post
+    apt-get update
+    apt install -y python3-pip
+    pip install 'glances[all]'
+
+%runscript
+    echo "Container was created $(date)"
+
+%test
+    echo 'Looking for pip...'
+    ( pip --version | grep -q 'pip 22.0.2' ) && echo 'Success!'
+    echo 'Looking for glances' 
+    ( glances --version | grep -q 'Glances version:	4.0.7' ) && echo 'Success!'
