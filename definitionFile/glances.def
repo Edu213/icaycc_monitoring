@@ -1,0 +1,23 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%post
+    apt-get update
+    apt install -y python3-pip
+    pip install 'glances[all]'
+    mkdir /etc/glances
+    cat <<EOF > /etc/glances/glances.conf
+    [prometheus]
+    host=0.0.0.0
+    port=17001
+    prefix=glances
+    labels=src:glances
+
+
+%runscript
+    echo "Container was created $(date)"
+    glances $@
+
+%test
+    echo 'Looking for pip...'
+    ( pip --version | grep -q 'pip 22.0.2' ) && echo 'Success!'
