@@ -1,0 +1,43 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%post
+    apt-get update
+    apt-get install -y wget tar
+    
+    # Descargar e instalar Prometheus 2.52.0
+    wget https://github.com/prometheus/prometheus/releases/download/v2.52.0/prometheus-2.52.0.linux-amd64.tar.gz
+    tar xvf prometheus-2.52.0.linux-amd64.tar.gz
+    mv prometheus-2.52.0.linux-amd64/prometheus /usr/local/bin/
+    mv prometheus-2.52.0.linux-amd64/promtool /usr/local/bin/
+    mkdir -p /etc/prometheus
+    mv prometheus-2.52.0.linux-amd64/consoles /etc/prometheus/
+    mv prometheus-2.52.0.linux-amd64/console_libraries /etc/prometheus/
+    rm -rf prometheus-2.52.0.linux-amd64 prometheus-2.52.0.linux-amd64.tar.gz
+
+    # Crear el archivo de configuración de Prometheus
+    cat <<EOF > /etc/prometheus/my_config.yml
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    rule_files:
+      # - "first.rules"
+      # - "second.rules"
+    remote_write:
+      - url: '132.248.8.253%3A17002/api/v1/write'
+    scrape_configs:
+      - job_name: prometheus
+        static_configs:
+          - targets: ['132.248.8.253:17001']
+
+%runscript
+    echo "Container was created $(date)"
+    
+    # Ejecutar Prometheus con el archivo de configuración especificado
+    /usr/local/bin/prometheus --config.file=/etc/prometheus/my_config.yml $@
+
+%test
+    echo 'Looking for Prometheus...'
+    ( /usr/local/bin/prometheus --version | grep -q 'prometheus' ) && echo 'Success!'
+
